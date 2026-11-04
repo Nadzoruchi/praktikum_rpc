@@ -23,6 +23,16 @@ def open_stub(address):
 def run_transfers(address, count, unsafe, same_id):
     channel, stub = open_stub(address)
     try:
+        if unsafe:
+            print("[L3.3 - Concurrency tanpa LOCK]")
+            print(f"Menjalankan {count} transfer dengan 10 thread client.")
+        elif same_id:
+            print("[L3.1 - Retry dengan request_id tetap]")
+            print(f"Menjalankan {count} transfer 10 dari A ke B.")
+        else:
+            print("[L3.2 - Retry dengan UUID baru setiap percobaan]")
+            print(f"Menjalankan {count} transfer 10 dari A ke B.")
+
         def one(_index):
             request_id = str(uuid.uuid4())
             for attempt in range(1, 4):
@@ -51,6 +61,8 @@ def run_transfers(address, count, unsafe, same_id):
 
 
 def benchmark(address, requests=200, concurrency=20):
+    print("[L3.4 - Throughput GetMahasiswa]")
+    print(f"Mengukur {requests} request dengan {concurrency} thread client.")
     channel, stub = open_stub(address)
     try:
         def call(_):
@@ -77,6 +89,7 @@ def benchmark_all(address, requests=200, concurrency=20):
 
 
 def failover(addresses, nim="2023001"):
+    print("[L3.5 - Failover server]")
     last_error = None
     for address in addresses:
         channel, stub = open_stub(address)
@@ -97,7 +110,7 @@ def failover(addresses, nim="2023001"):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--address", default="localhost:50051")
-    parser.add_argument("--count", type=int, default=20)
+    parser.add_argument("--count", type=int, default=20, help="jumlah transfer untuk L3.1-L3.3")
     parser.add_argument("--unsafe", action="store_true", help="jalankan L3.3 (server harus --unsafe-transfer)")
     parser.add_argument("--new-id-per-retry", action="store_true", help="jalankan L3.2")
     parser.add_argument("--benchmark", action="store_true", help="jalankan benchmark 200 request/20 thread")
