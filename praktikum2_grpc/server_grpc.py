@@ -100,7 +100,6 @@ class LayananNilai(pb_grpc.LayananNilaiServicer):
         return pb.StatusResponse(sukses=True, pesan=f"{tersimpan} nilai tersimpan")
 
     def Diskusi(self, request_iterator, context):
-        # Satu thread membaca stream masuk agar handler tetap bisa mengirim pesan masuk.
         first = None
         try:
             first = next(request_iterator)
